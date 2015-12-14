@@ -7,6 +7,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
+import java.util.HashMap;
+import java.util.Map;
 
 @Controller
 public class SearchController {
@@ -22,13 +24,16 @@ public class SearchController {
 
     @RequestMapping(value="/search")
     @ResponseBody
-	//We add a parameter max , which contains,if it true, the number of tweets
-    public Object search(@RequestParam("q") String q, @RequestParam(value="n", required=false) Integer n) {
-		HashMap<String,Object> hashmap = new HashMap<String, Object>();
-		hashmap.put("CamelTwitterKeywords",q);
-		if(n!=null){
-			hashmap.put("CamelTwitterCount",n);
+    public Object search(@RequestParam("q") String q) {
+		Map<String, Object> parametros = new HashMap<String, Object>();
+		String[] entrada = q.split(" max:");
+		if(entrada.length == 2){
+			parametros.put("CamelTwitterKeywords", entrada[0]);
+			parametros.put("CamelTwitterCount", entrada[1]);
 		}
-        return producerTemplate.requestBodyAndHeader("direct:search", "", "CamelTwitterKeywords", q);
+		else{
+			parametros.put("CamelTwitterKeywords", entrada[0]);
+		}
+        return producerTemplate.requestBodyAndHeaders("direct:search", "", parametros);
     }
 }
