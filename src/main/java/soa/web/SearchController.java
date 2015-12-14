@@ -22,7 +22,13 @@ public class SearchController {
 
     @RequestMapping(value="/search")
     @ResponseBody
-    public Object search(@RequestParam("q") String q) {
+	//We add a parameter max , which contains,if it true, the number of tweets
+    public Object search(@RequestParam("q") String q, @RequestParam(value="n", required=false) Integer n) {
+		HashMap<String,Object> hashmap = new HashMap<String, Object>();
+		hashmap.put("CamelTwitterKeywords",q);
+		if(n!=null){
+			hashmap.put("CamelTwitterCount",n);
+		}
         return producerTemplate.requestBodyAndHeader("direct:search", "", "CamelTwitterKeywords", q);
     }
 }
